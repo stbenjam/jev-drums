@@ -1,6 +1,6 @@
 # Jev Drums
 
-A small drum machine where TypeSafe Jev arranges coherent beats from a mood prompt. Six synthesized drum voices, an editable 16-step sequencer, tempo and volume controls, and variations that enter on bar boundaries.
+A small drum machine where TypeSafe Jev composes drum patterns from a mood prompt. Six synthesized drum voices, an editable 16-step sequencer, tempo and volume controls, and variations that enter on bar boundaries.
 
 ## Run
 
@@ -18,9 +18,11 @@ Open http://localhost:3003 and click Generate to create a beat and start playbac
 
 Input: a mood description, tempo (60–180 BPM), and optionally the current pattern.
 
-Jev uses two native OpenRouter Decisions API calls per generation. First it selects a shared groove and timing feel. Then it picks compatible, complete rhythmic motifs for kick, snare, clap, closed hi-hat, open hi-hat, and tom. Each motif is one bar of sixteen steps: `0` means silence, `1` a normal hit, and `2` an accent. Candidate motifs are curated in code. Jev scores them in musical context, and the app samples its option probabilities to choose motifs and which tracks evolve. Groove and swing use the highest-probability choices to keep a shared musical foundation. Repeating Generate with the same prompt varies the last result. It does not synthesize an audio file or independently invent every sample.
+Each generation sends **one native OpenRouter Decisions API request containing 96 choice questions**: six tracks × sixteen steps. For each kick, snare, clap, closed hi-hat, open hi-hat, and tom step, Jev chooses among `off`, `hit`, and `accent`. These become pattern values `0`, `1`, and `2`. Every question shares the mood prompt, tempo, and optional previous pattern as context. The app samples Jev's returned option probabilities for each step. Jev supplies every step of the generated pattern through these decisions.
 
-The browser synthesizes the sounds using Web Audio and schedules them against its audio clock. Pattern changes queue at the next bar boundary. Auto-evolve defaults to every bar; choose every 1, 2, 4, or 8 bars, with one generation at a time. Each variation uses the previous pattern, changes one or two tracks, and preserves the rest. Generation failures preserve the current beat. The displayed confidence is model choice confidence, not a measure of musical quality.
+Repeating Generate with the same prompt uses the current beat as context. A changed prompt starts fresh. Automatic evolution also uses the latest applied pattern, and any of its 96 steps may change. Each pattern is one bar of sixteen sixteenth notes in straight 4/4 time. The hand-authored starter beat is separate from Jev's generated patterns.
+
+The browser synthesizes the sounds using Web Audio and schedules them against its audio clock. Generate starts playback when the beat is ready. Pattern changes during playback queue at the next bar boundary. Auto-evolve defaults to every bar; choose every 1, 2, 4, or 8 bars, with one generation at a time. Playback continues with the current beat while waiting for a response or after a generation failure. The displayed confidence is the mean model choice confidence across the 96 per-step decisions, not a measure of musical quality.
 
 Only generation sends prompts and pattern context to OpenRouter/TypeSafe. Playback and pad editing are local. Auto-evolve makes ongoing billable requests while enabled and playing; stopping playback stops requesting further variations. Audio may pause if the browser suspends a background tab.
 

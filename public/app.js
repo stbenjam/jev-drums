@@ -62,7 +62,7 @@ function showResult(result) {
   $('groove').textContent = result.groove || 'Jev groove';
   $('confidence').textContent = Number.isFinite(result.confidence) ? `${Math.round(result.confidence * 100)}%` : '—';
   $('latency').textContent = Number.isFinite(result.latencyMs) ? `${(result.latencyMs / 1000).toFixed(2)} s` : '—';
-  $('confidence').title = `Mean choice confidence · ${result.model || '~typesafe/jev-latest'}`;
+  $('confidence').title = `Mean confidence across 96 per-step choices · ${result.model || '~typesafe/jev-latest'}`;
   swing = Number.isFinite(result.swing) ? result.swing : 0;
 }
 function applyQueued() {
@@ -139,7 +139,7 @@ async function generate(evolve = false) {
   const previousPattern = clone(pattern);
   const requestTransportVersion = transportIntentVersion;
   generating = true; updateConnection();
-  log(isVariation ? 'Jev is shaping the next variation…' : `Jev is composing: ${prompt}`);
+  log(isVariation ? 'Jev is choosing 96 steps using the previous beat…' : `Jev is composing 96 steps: ${prompt}`);
   try {
     if (!evolve) await engine.unlock();
     const body = await api('/api/generate', {
