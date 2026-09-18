@@ -103,3 +103,25 @@ test('stop during context resume cannot resurrect playback', async t => {
   assert.equal(engine.playing, false);
   assert.equal(contexts[0].sources.length, 0);
 });
+
+
+test('unlock resumes the shared context without starting playback', async t => {
+  const { contexts, tick } = fixture(t);
+  const steps = [];
+  const engine = createDrumEngine({ onStep: step => steps.push(step) });
+  t.after(() => engine.stop());
+  await engine.unlock();
+  await engine.unlock();
+  tick(500);
+  assert.equal(contexts.length, 1);
+  assert.equal(engine.playing, false);
+  assert.equal(contexts[0].sources.length, 0);
+  assert.deepEqual(steps, []);
+  const pattern = blank();
+  pattern.tom[0] = 1;
+  await engine.start(pattern);
+  tick(50);
+  assert.equal(contexts.length, 1);
+  assert.equal(engine.playing, true);
+  assert.deepEqual(steps, [0]);
+});

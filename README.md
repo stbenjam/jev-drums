@@ -12,7 +12,7 @@ cp .env.example .env
 npm start
 ```
 
-Open http://localhost:3003 and press Play to enable audio. The initial starter pattern is hand-authored. Generate asks Jev to write a new arrangement. Keys stay on the local server and `.env` is ignored by Git.
+Open http://localhost:3003 and click Generate to create a beat and start playback. Play starts the hand-authored starter pattern without waiting for Jev. Keys stay on the local server and `.env` is ignored by Git.
 
 ## Inputs and outputs
 
@@ -20,7 +20,7 @@ Input: a mood description, tempo (60–180 BPM), and optionally the current patt
 
 Jev uses two native OpenRouter Decisions API calls per generation. First it selects a shared groove and timing feel. Then it picks compatible, complete rhythmic motifs for kick, snare, clap, closed hi-hat, open hi-hat, and tom. Each motif is one bar of sixteen steps: `0` means silence, `1` a normal hit, and `2` an accent. Candidate motifs are curated in code. Jev scores them in musical context, and the app samples its option probabilities to choose motifs and which tracks evolve. Groove and swing use the highest-probability choices to keep a shared musical foundation. Repeating Generate with the same prompt varies the last result. It does not synthesize an audio file or independently invent every sample.
 
-The browser synthesizes the sounds using Web Audio and schedules them against its audio clock. Pattern changes queue at the next bar boundary. Auto-evolve asks for a variation every 1, 2, 4, or 8 bars while playing, with one generation at a time. Each variation uses the previous pattern, changes one or two tracks, and preserves the rest. Generation failures preserve the current beat. The displayed confidence is model choice confidence, not a measure of musical quality.
+The browser synthesizes the sounds using Web Audio and schedules them against its audio clock. Pattern changes queue at the next bar boundary. Auto-evolve defaults to every bar; choose every 1, 2, 4, or 8 bars, with one generation at a time. Each variation uses the previous pattern, changes one or two tracks, and preserves the rest. Generation failures preserve the current beat. The displayed confidence is model choice confidence, not a measure of musical quality.
 
 Only generation sends prompts and pattern context to OpenRouter/TypeSafe. Playback and pad editing are local. Auto-evolve makes ongoing billable requests while enabled and playing; stopping playback stops requesting further variations. Audio may pause if the browser suspends a background tab.
 

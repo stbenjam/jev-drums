@@ -19,7 +19,7 @@
     <button id="play" class="play" type="button"><span id="play-symbol" aria-hidden="true">▶</span><span id="play-label">Play</span></button>
     <label class="slider-control tempo"><span>Tempo <output id="tempo-output" for="tempo">108 <small>BPM</small></output></span><input id="tempo" type="range" min="60" max="180" value="108" aria-label="Tempo in beats per minute"></label>
     <label class="slider-control volume"><span>Volume</span><input id="volume" type="range" min="0" max="100" value="70" aria-label="Volume"></label>
-    <div class="evolve-wrap"><label class="evolve"><input id="evolve" type="checkbox" checked><span class="switch" aria-hidden="true"></span><span>Evolve</span></label><select id="evolve-cadence" aria-label="Evolution interval"><option value="1">Every bar</option><option value="2" selected>Every 2 bars</option><option value="4">Every 4 bars</option><option value="8">Every 8 bars</option></select></div>
+    <div class="evolve-wrap"><label class="evolve"><input id="evolve" type="checkbox" checked><span class="switch" aria-hidden="true"></span><span>Evolve</span></label><select id="evolve-cadence" aria-label="Evolution interval"><option value="1" selected>Every bar</option><option value="2">Every 2 bars</option><option value="4">Every 4 bars</option><option value="8">Every 8 bars</option></select></div>
   </section>
   <section class="bottom-panel">
     <div class="readout"><div class="connection"><i id="connection-dot"></i><span id="connection">Connecting…</span></div><div class="metrics"><span title="Mean confidence in Jev’s selected patterns; not a score for musical quality.">Choice confidence <strong id="confidence">—</strong></span><span>Response <strong id="latency">—</strong></span></div></div>

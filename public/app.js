@@ -14,6 +14,7 @@ let pattern = {
 let configured = false, generating = false, queuedResult = null, playingIntent = false;
 let swing = .08, lastEvolvedBar = -1, playhead = -1;
 let lastPromptOfAppliedResult = null;
+let transportIntentVersion = 0;
 const pads = {}, rows = {}, muted = new Set();
 
 function log(message, error = false) {
@@ -136,9 +137,11 @@ async function generate(evolve = false) {
   if (!configured) { $('settings-dialog').showModal(); $('api-key').focus(); return; }
   const isVariation = prompt === lastPromptOfAppliedResult;
   const previousPattern = clone(pattern);
+  const requestTransportVersion = transportIntentVersion;
   generating = true; updateConnection();
   log(isVariation ? 'Jev is shaping the next variation…' : `Jev is composing: ${prompt}`);
   try {
+    if (!evolve) await engine.unlock();
     const body = await api('/api/generate', {
       prompt, bpm: Number($('tempo').value), ...(isVariation ? {previousPattern} : {}),
     });
@@ -162,7 +165,9 @@ async function generate(evolve = false) {
       pattern = clone(result.pattern);
       engine.setPattern(pattern); engine.setSwing(result.swing || 0);
       showResult(result); updatePads();
-      log(`${result.activityName || result.groove || 'New groove'} ready. Press Play.`);
+      const shouldAutoplay = !evolve && requestTransportVersion === transportIntentVersion;
+      const started = shouldAutoplay && await startPlayback();
+      log(`${result.activityName || result.groove || 'New groove'} ${started ? 'is playing.' : 'ready. Press Play.'}`);
     }
   } catch (error) { log(error.message || 'Could not generate a beat.', true); }
   finally { generating = false; updateConnection(); }
@@ -171,7 +176,20 @@ $('generate-form').addEventListener('submit', event => {event.preventDefault(); 
 for (const button of document.querySelectorAll('[data-prompt]')) button.addEventListener('click', () => {
   $('prompt').value = button.dataset.prompt; $('prompt').focus();
 });
+async function startPlayback() {
+  playingIntent = true; $('play').disabled = true;
+  try {
+    lastEvolvedBar = -1;
+    await engine.start(clone(pattern), Number($('tempo').value), swing);
+    if (!engine.playing) { playingIntent = false; return false; }
+    $('play-label').textContent = 'Stop'; $('play-symbol').textContent = '■'; $('play').classList.add('is-playing');
+    return true;
+  } catch (error) {
+    playingIntent = false; log(error.message || 'Could not start audio.', true); return false;
+  } finally { $('play').disabled = false; }
+}
 $('play').addEventListener('click', async () => {
+  transportIntentVersion++;
   if (playingIntent) {
     playingIntent = false; engine.stop();
     if (queuedResult) {
@@ -183,13 +201,7 @@ $('play').addEventListener('click', async () => {
     $('play-label').textContent = 'Play'; $('play-symbol').textContent = '▶'; $('play').classList.remove('is-playing');
     return;
   }
-  playingIntent = true; $('play').disabled = true;
-  try {
-    lastEvolvedBar = -1;
-    await engine.start(clone(pattern), Number($('tempo').value), swing);
-    $('play-label').textContent = 'Stop'; $('play-symbol').textContent = '■'; $('play').classList.add('is-playing');
-  } catch (error) { playingIntent = false; log(error.message || 'Could not start audio.', true); }
-  finally { $('play').disabled = false; }
+  await startPlayback();
 });
 $('tempo').addEventListener('input', () => {
   $('tempo-output').replaceChildren(document.createTextNode(`${$('tempo').value} `));

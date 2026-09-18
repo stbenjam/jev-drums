@@ -163,6 +163,11 @@ export function createDrumEngine({ onStep, onBar, onPatternApplied } = {}) {
   }
 
   return {
+    // Call during a user gesture before waiting for a generated pattern.
+    async unlock() {
+      initialize();
+      await context.resume();
+    },
     async start(nextPattern, nextBpm = 112, nextSwing = 0) {
       stop();
       const token = generation;
