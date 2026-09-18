@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#191b1c"><title>Jev Drums</title>
+<link rel="stylesheet" href="/styles.css"><script type="module" src="/app.js"></script>
+</head>
+<body>
+<main class="machine">
+  <header class="masthead"><h1>Jev Drums<span class="title-dot" aria-hidden="true"></span></h1><button class="icon-button" id="settings" aria-label="API key settings" title="API key settings">⚙</button></header>
+  <form id="generate-form" class="prompt-form"><label class="sr-only" for="prompt">Describe a beat</label><input id="prompt" maxlength="500" value="A warm, laid-back hip-hop groove" placeholder="Describe a beat…" autocomplete="off" required><button class="generate" id="generate" type="submit">Generate <span aria-hidden="true">↗</span></button></form>
+  <div class="presets" aria-label="Beat ideas"><button type="button" data-prompt="A warm, laid-back hip-hop groove">Laid-back hip-hop</button><button type="button" data-prompt="A tight four-on-the-floor house groove">House</button><button type="button" data-prompt="A syncopated, dry and punchy funk groove">Funk</button><button type="button" data-prompt="A sparse, spacious late-night electronic groove">Late night</button></div>
+  <section class="sequencer" aria-label="Drum sequencer">
+    <div class="sequence-heading"><div class="groove"><span id="groove">Starter beat</span><span class="queued" id="queued" hidden>Queued · next bar</span></div><span class="bar-count" id="bar-count">4 / 4</span></div>
+    <div class="grid-scroll"><div class="step-grid" id="step-grid"><span class="track-heading">SOUND</span><div class="step-numbers" id="step-numbers" aria-hidden="true"></div></div></div>
+    <div class="sequence-footer"><span>Click a pad: hit → accent → off</span><div class="legend"><i></i> Hit <i class="accent"></i> Accent</div></div>
+  </section>
+  <section class="transport" aria-label="Playback controls">
+    <button id="play" class="play" type="button"><span id="play-symbol" aria-hidden="true">▶</span><span id="play-label">Play</span></button>
+    <label class="slider-control tempo"><span>Tempo <output id="tempo-output" for="tempo">108 <small>BPM</small></output></span><input id="tempo" type="range" min="60" max="180" value="108" aria-label="Tempo in beats per minute"></label>
+    <label class="slider-control volume"><span>Volume</span><input id="volume" type="range" min="0" max="100" value="70" aria-label="Volume"></label>
+    <div class="evolve-wrap"><label class="evolve"><input id="evolve" type="checkbox" checked><span class="switch" aria-hidden="true"></span><span>Evolve</span></label><select id="evolve-cadence" aria-label="Evolution interval"><option value="1">Every bar</option><option value="2" selected>Every 2 bars</option><option value="4">Every 4 bars</option><option value="8">Every 8 bars</option></select></div>
+  </section>
+  <section class="bottom-panel">
+    <div class="readout"><div class="connection"><i id="connection-dot"></i><span id="connection">Connecting…</span></div><div class="metrics"><span title="Mean confidence in Jev’s selected patterns; not a score for musical quality.">Choice confidence <strong id="confidence">—</strong></span><span>Response <strong id="latency">—</strong></span></div></div>
+    <ol class="activity" id="activity" aria-label="Jev activity" aria-live="polite"></ol>
+  </section>
+</main>
+<dialog id="settings-dialog"><form id="settings-form"><div class="dialog-heading"><h2>OpenRouter API key</h2><button id="close-settings" class="icon-button" type="button" aria-label="Close settings">×</button></div><label for="api-key">Used by the local server for Jev.</label><input id="api-key" type="password" autocomplete="off" placeholder="sk-or-…" required><p id="settings-error" role="alert"></p><button class="generate" id="save-key" type="submit">Save key</button></form></dialog>
+</body>
+</html>

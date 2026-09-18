@@ -1,0 +1,9 @@
+{
+  "name": "jev-drums",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A Jev-powered drum machine with coherent grooves and a live step sequencer",
+  "scripts": {"start":"node --env-file-if-exists=.env server.mjs", "test":"node --test"},
+  "engines": {"node": ">=22"}
+}
